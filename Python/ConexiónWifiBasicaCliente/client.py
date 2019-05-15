@@ -1,6 +1,6 @@
 import socket
 
-IP_ESP = "192.168.4.1"
+IP_ESP = "172.20.10.9"
 ESP_PORT = 80
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

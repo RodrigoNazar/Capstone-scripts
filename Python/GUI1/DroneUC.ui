@@ -47,11 +47,11 @@ color: rgb(170, 11, 11);</string>
      <string notr="true">border-color: rgb(0, 0, 0);</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="conectarBoton">
+   <widget class="QPushButton" name="botonAltura">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>260</y>
+      <x>370</x>
+      <y>280</y>
       <width>191</width>
       <height>61</height>
      </rect>
@@ -62,7 +62,69 @@ font: 20pt &quot;Arial&quot;;
 color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
-     <string>Conectar</string>
+     <string>Enviar</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="boxAltura">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>230</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>240</y>
+      <width>55</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Altura:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botonMotores">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>280</y>
+      <width>191</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 127);
+font: 12pt &quot;Arial&quot;;
+color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Conectar Motores</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="botonTest">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>280</y>
+      <width>191</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 127);
+font: 10pt &quot;Arial&quot;;
+color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Ejecutar test de motores</string>
     </property>
    </widget>
   </widget>
