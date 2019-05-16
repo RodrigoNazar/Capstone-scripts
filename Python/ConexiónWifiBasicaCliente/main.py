@@ -1,17 +1,19 @@
 # from server import set_up_server
 import socket
-from machine import Pin, PWM
-
+from motores import Motores
 addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
 
 s = socket.socket()
 s.bind(addr)
 s.listen(1)
 
-# print('\n\nlistening on', addr)
+motores = Motores()
 
 while True:
     cl, addr = s.accept()
     data = cl.recv(1024).decode('ascii')
-    # print('Data collected:', data)
+    if data == '1':
+        motores.increase_duty_all()
+    elif data == '0':
+        motores.decrease_duty_all()
     cl.close()
