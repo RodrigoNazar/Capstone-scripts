@@ -9,7 +9,7 @@ def conectar_motores():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((IP_ESP, ESP_PORT))
 
-    sock.sendall('Conecta motores!\n\n\n'.encode('ascii'))
+    sock.sendall('calibracion'.encode('ascii'))
 
     sock.close()
 
@@ -21,7 +21,7 @@ def enviar_altura(altura):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((IP_ESP, ESP_PORT))
 
-    sock.sendall(f'Nueva altura: {altura}\n\n\n'.encode('ascii'))
+    sock.sendall(f'{altura}'.encode('ascii'))
 
     sock.close()
 
