@@ -22,7 +22,7 @@ void setup() {
 //                    Main Program Loop
 //=======================================================================
 void loop() {
-  //PWM Value varries from 0 to 1023  
+  //PWM Value varries from 0 to 1023
   Serial.println("10 % PWM");
   analogWrite(LED,102);
   delay(2000);
@@ -49,10 +49,10 @@ void loop() {
   {
     // set the brightness of pin 9:
     analogWrite(LED, brightness);
-  
+
     // change the brightness for next time through the loop:
     brightness = brightness + fadeAmount;
-  
+
     // reverse the direction of the fading at the ends of the fade:
     if (brightness <= 0 || brightness >= 1023) {
       fadeAmount = -fadeAmount;
