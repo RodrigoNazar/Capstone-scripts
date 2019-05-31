@@ -1,13 +1,13 @@
-#include <ESP8266WiFi.h>
-#define MOTOR1 12
-#define MOTOR2 13
-#define MOTOR3 0
-#define MOTOR4 2
+// #include <ESP8266WiFi.h>
+#define MOTOR1 5
+#define MOTOR2 6
+#define MOTOR3 9
+#define MOTOR4 10
 #define MAX 700
 #define MIN 200
 
 void setup() {
-  analogWriteFreq(24000);
+  // analogWriteFreq(24000);
 
   Serial.begin(9600);
   pinMode(MOTOR1,OUTPUT);
