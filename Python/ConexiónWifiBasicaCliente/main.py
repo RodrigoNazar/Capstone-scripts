@@ -4,7 +4,7 @@ from machine import freq, UART
 freq(160000000)
 
 uart = UART(0)                                  # init with given baudrate
-uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
+uart.init(57600, bits=8, parity=None, stop=1)   # init with given parameters
 
 uart1 = UART(1)                                 # init with given baudrate
 uart1.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
@@ -20,7 +20,6 @@ micro2 = False
 
 while True:
     cl, addr = s.accept()
-    # data = cl.recv(1024).decode('hex')
     data = cl.recv(1024)
 
     '''

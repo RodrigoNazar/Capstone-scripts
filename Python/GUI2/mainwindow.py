@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'DroneUC.ui'
+#
+# Created by: PyQt5 UI code generator 5.12.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1100, 883)
+        MainWindow.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.motor1_slide = QtWidgets.QSlider(self.centralwidget)
+        self.motor1_slide.setGeometry(QtCore.QRect(210, 440, 22, 281))
+        self.motor1_slide.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.motor1_slide.setMinimum(42)
+        self.motor1_slide.setMaximum(254)
+        self.motor1_slide.setOrientation(QtCore.Qt.Vertical)
+        self.motor1_slide.setObjectName("motor1_slide")
+        self.motor2_slide = QtWidgets.QSlider(self.centralwidget)
+        self.motor2_slide.setGeometry(QtCore.QRect(350, 440, 22, 281))
+        self.motor2_slide.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.motor2_slide.setMinimum(42)
+        self.motor2_slide.setMaximum(254)
+        self.motor2_slide.setOrientation(QtCore.Qt.Vertical)
+        self.motor2_slide.setObjectName("motor2_slide")
+        self.motor3_slide = QtWidgets.QSlider(self.centralwidget)
+        self.motor3_slide.setGeometry(QtCore.QRect(490, 440, 22, 281))
+        self.motor3_slide.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.motor3_slide.setMinimum(42)
+        self.motor3_slide.setMaximum(254)
+        self.motor3_slide.setOrientation(QtCore.Qt.Vertical)
+        self.motor3_slide.setObjectName("motor3_slide")
+        self.motor4_slide = QtWidgets.QSlider(self.centralwidget)
+        self.motor4_slide.setGeometry(QtCore.QRect(640, 440, 22, 281))
+        self.motor4_slide.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.motor4_slide.setMinimum(42)
+        self.motor4_slide.setMaximum(254)
+        self.motor4_slide.setOrientation(QtCore.Qt.Vertical)
+        self.motor4_slide.setObjectName("motor4_slide")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(80, 400, 931, 361))
+        self.label.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.label.setText("")
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(190, 350, 61, 16))
+        self.label_2.setStyleSheet("font: 10pt \"SansSerif\";")
+        self.label_2.setObjectName("label_2")
+        self.motores_slide = QtWidgets.QSlider(self.centralwidget)
+        self.motores_slide.setGeometry(QtCore.QRect(870, 440, 22, 281))
+        self.motores_slide.setStyleSheet("background-color: rgb(0, 0, 127);")
+        self.motores_slide.setMinimum(42)
+        self.motores_slide.setMaximum(254)
+        self.motores_slide.setSliderPosition(42)
+        self.motores_slide.setOrientation(QtCore.Qt.Vertical)
+        self.motores_slide.setObjectName("motores_slide")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(330, 350, 61, 16))
+        self.label_4.setStyleSheet("font: 10pt \"SansSerif\";")
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setGeometry(QtCore.QRect(470, 350, 61, 16))
+        self.label_5.setStyleSheet("font: 10pt \"SansSerif\";")
+        self.label_5.setObjectName("label_5")
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setGeometry(QtCore.QRect(620, 350, 61, 16))
+        self.label_6.setStyleSheet("font: 10pt \"SansSerif\";")
+        self.label_6.setObjectName("label_6")
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setGeometry(QtCore.QRect(810, 350, 141, 16))
+        self.label_7.setStyleSheet("font: 10pt \"SansSerif\";")
+        self.label_7.setObjectName("label_7")
+        self.Boton_calibracion = QtWidgets.QPushButton(self.centralwidget)
+        self.Boton_calibracion.setGeometry(QtCore.QRect(250, 230, 191, 51))
+        self.Boton_calibracion.setStyleSheet("background-color: rgb(0, 0, 127);\n"
+"font: 14pt \"MS Shell Dlg 2\";\n"
+"color: rgb(255, 255, 255);")
+        self.Boton_calibracion.setObjectName("Boton_calibracion")
+        self.Titulo = QtWidgets.QLabel(self.centralwidget)
+        self.Titulo.setGeometry(QtCore.QRect(390, 90, 361, 61))
+        self.Titulo.setStyleSheet("font: 8pt \"Swis721 Blk BT\";\n"
+"color: rgb(170, 11, 11);")
+        self.Titulo.setObjectName("Titulo")
+        self.Boton_apagar = QtWidgets.QPushButton(self.centralwidget)
+        self.Boton_apagar.setGeometry(QtCore.QRect(670, 230, 191, 51))
+        self.Boton_apagar.setStyleSheet("background-color: rgb(0, 0, 127);\n"
+"font: 14pt \"MS Shell Dlg 2\";\n"
+"color: rgb(255, 255, 255);")
+        self.Boton_apagar.setObjectName("Boton_apagar")
+        self.Consola = QtWidgets.QLabel(self.centralwidget)
+        self.Consola.setGeometry(QtCore.QRect(100, 790, 911, 61))
+        self.Consola.setText("")
+        self.Consola.setObjectName("Consola")
+        self.label.raise_()
+        self.motor1_slide.raise_()
+        self.motor2_slide.raise_()
+        self.motor3_slide.raise_()
+        self.motor4_slide.raise_()
+        self.label_2.raise_()
+        self.motores_slide.raise_()
+        self.label_4.raise_()
+        self.label_5.raise_()
+        self.label_6.raise_()
+        self.label_7.raise_()
+        self.Boton_calibracion.raise_()
+        self.Titulo.raise_()
+        self.Boton_apagar.raise_()
+        self.Consola.raise_()
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_2.setText(_translate("MainWindow", "Motor 1"))
+        self.label_4.setText(_translate("MainWindow", "Motor 2"))
+        self.label_5.setText(_translate("MainWindow", "Motor 3"))
+        self.label_6.setText(_translate("MainWindow", "Motor 4"))
+        self.label_7.setText(_translate("MainWindow", "Todos los motores"))
+        self.Boton_calibracion.setText(_translate("MainWindow", "Calibración"))
+        self.Titulo.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:36pt;\">DRONE UC</span></p></body></html>"))
+        self.Boton_apagar.setText(_translate("MainWindow", "Apagar Motores"))
+
+
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

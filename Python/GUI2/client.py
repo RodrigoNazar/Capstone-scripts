@@ -54,3 +54,17 @@ def apagar_motores():
 
     enviar_caracter(4)
     enviar_caracter(42)
+
+
+def mover_motores(valor):
+    enviar_caracter(1)
+    enviar_caracter(valor)
+
+    enviar_caracter(2)
+    enviar_caracter(valor)
+
+    enviar_caracter(3)
+    enviar_caracter(valor)
+
+    enviar_caracter(4)
+    enviar_caracter(valor)
