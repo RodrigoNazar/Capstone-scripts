@@ -1,12 +1,35 @@
 #include <avr/io.h>
-#include <stdint.h>
+#include <stdlib.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
 #include "./libreria/mi_uart.h"
 #define F_CPU 16000000UL
-#define MAX 170
-#define MIN 35
+#define MAX 255
+#define MIN 41
+#define TRIGGER_ON() PORTD |= (1 << PD2)
+#define TRIGGER_OFF() PORTD &= ~(1 << PD2)
+
+char recibido;
+char m[15];
+/*
+int tiempo_espera;
+int espera;
+char estado_echo;*/
+
+enum accion{
+    Motor_derecho,
+    Motor_izquierdo,
+    Nada
+}; typedef enum accion Accion;
+
+Accion accion_actual;
 
 int main(){
-    char m[5];
+    //estado_echo = PIND & (1 << 3);
+    //int distancia;
+    accion_actual = Nada;
+
+    /*DDRD |= (1 << PD2);*/
 
     DDRB |= (1 << DDB1)|(1 << DDB2);
     // PB1 and PB2 is now an output, is D9 and D10
@@ -18,37 +41,105 @@ int main(){
     OCR1B = MAX;
 
     TCCR1A |= (1 << COM1A1)|(1 << COM1B1);
-
     TCCR1B |= (1 << WGM13) | (1 << CS10);
+
+    /* Timer 0 para contar tiempo
+       modo comparación, cuenta hasta 16 para freq 1us
+       prescaler 1*/
+    /*TCCR0A |= (1 << WGM01);
+    OCR0A = 16;
+    TCCR0B |= (1 << CS01);
+
+    // Interruptor echo
+    DDRD &= ~(1 << 3);
+    //PORTD |= (1 << 3);
+    PCMSK2 |= (1 << 3);
+    PCICR |= (1 << 2);*/
 
     Configuracion* conf = crear_configuracion(57600, 0, 8, 1);
     configurar_uart(conf);
     kill_configuracion(conf);
+    sei();
 
-    enviar_str("Conecte los motores\n");
-    for(volatile uint32_t i = 0; i < 1600000; i++);
-    for(volatile uint32_t i = 0; i < 1600000; i++);
-    enviar_str("Comenzando calibracion\n");
+    while(1){
+        /*enviar_str("aii\n");
+        TRIGGER_OFF();
+        _delay_us(5);
 
+        TRIGGER_ON();
+        _delay_us(10);
+
+        TRIGGER_OFF();
+        //TIMSK0 |= (1 << OCIE0A);
+        //while(!(PIND&ECHO));
+        //tiempo_espera = 0;
+        //while((PIND&ECHO));
+        //TIMSK0 &= ~(1 << OCIE0A);
+        espera = 1;
+        while(espera);
+
+        distancia = tiempo_espera * 10 / 292/ 2;
+        _delay_ms(1000);*/
+
+    }
+}
+
+
+void calibrar(void){
     for(volatile uint16_t i = MAX - 1; i > MIN; i--){
         OCR1A = i;
         OCR1B = i;
     }
-    enviar_str("Listo\n");
-    for(volatile uint32_t i = 0; i < 1600000; i++);
-    enviar_str("Empezando\n");
+}
 
-    while(1){
-        for(volatile uint16_t i = MIN+1; i < MAX; i++){
-            OCR1A = i;
-            OCR1B = i;
-            sprintf(m, "%d\n", i);
-            enviar_str(m);
-            for(volatile uint32_t i = 0; i < 320000; i++){}
+
+ISR (USART_RX_vect) {
+    recibido = UDR0;
+    sprintf(m, "%c\n", recibido);
+    enviar_str(m);
+    if (recibido == 0) {
+        calibrar();
+    }
+    else if (recibido == 1){
+        accion_actual = Motor_derecho;
+    }
+    else if (recibido == 2){
+        accion_actual = Motor_izquierdo;
+    }
+    else if (recibido > MIN && recibido < MAX) {
+        switch (accion_actual) {
+            case Motor_izquierdo:
+                OCR1A = recibido;
+                break;
+            case Motor_derecho:
+                OCR1B = recibido;
+                break;
         }
-        OCR1A = MIN;
-        OCR1B = MIN;
-        for(volatile uint32_t i = 0; i < 1600000; i++);
-
+        accion_actual = Nada;
     }
 }
+
+/*
+ISR (TIMER0_COMPA_vect) {
+    tiempo_espera++;
+}
+
+
+
+ISR(PCINT2_vect){
+    char leer = PIND & (1 << 3);
+    if (leer != estado_echo) {
+        if (leer == 0) {
+            TIMSK0 &= ~(1 << OCIE0A);
+            espera = 0;
+            sprintf(m, "%d i\n", tiempo_espera);
+            enviar_str(m);
+        }
+        else if (leer == 1) {
+            TIMSK0 |= (1 << OCIE0A);
+            tiempo_espera = 0;
+        }
+    }
+    estado_echo = PIND & (1 << 3);
+}
+*/
