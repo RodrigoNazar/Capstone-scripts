@@ -10,7 +10,7 @@
 #define TRIGGER_OFF() PORTD &= ~(1 << PD2)
 
 char recibido;
-char m[15];
+//char m[15];
 /*
 int tiempo_espera;
 int espera;
@@ -19,6 +19,7 @@ char estado_echo;*/
 enum accion{
     Motor_derecho,
     Motor_izquierdo,
+    Ambos,
     Nada
 }; typedef enum accion Accion;
 
@@ -95,16 +96,19 @@ void calibrar(void){
 
 ISR (USART_RX_vect) {
     recibido = UDR0;
-    sprintf(m, "%c\n", recibido);
-    enviar_str(m);
+    /*sprintf(m, "%c\n", recibido);
+    enviar_str(m);*/
     if (recibido == 0) {
         calibrar();
     }
-    else if (recibido == 1){
+    else if (recibido == 3){
         accion_actual = Motor_derecho;
     }
-    else if (recibido == 2){
+    else if (recibido == 4){
         accion_actual = Motor_izquierdo;
+    }
+    else if (recibido == 5){
+        accion_actual = Ambos;
     }
     else if (recibido > MIN && recibido < MAX) {
         switch (accion_actual) {
@@ -112,6 +116,10 @@ ISR (USART_RX_vect) {
                 OCR1A = recibido;
                 break;
             case Motor_derecho:
+                OCR1B = recibido;
+                break;
+            case Ambos:
+                OCR1A = recibido;
                 OCR1B = recibido;
                 break;
         }

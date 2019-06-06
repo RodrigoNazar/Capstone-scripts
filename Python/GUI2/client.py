@@ -2,7 +2,7 @@ import socket
 
 
 def enviar_caracter(valor):
-    IP_ESP = "172.20.10.9"
+    IP_ESP = "192.168.43.9"
     ESP_PORT = 80
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,28 +43,10 @@ def motor4(valor):
 
 
 def apagar_motores():
-    enviar_caracter(1)
-    enviar_caracter(42)
-
-    enviar_caracter(2)
-    enviar_caracter(42)
-
-    enviar_caracter(3)
-    enviar_caracter(42)
-
-    enviar_caracter(4)
+    enviar_caracter(5)
     enviar_caracter(42)
 
 
 def mover_motores(valor):
-    enviar_caracter(1)
-    enviar_caracter(valor)
-
-    enviar_caracter(2)
-    enviar_caracter(valor)
-
-    enviar_caracter(3)
-    enviar_caracter(valor)
-
-    enviar_caracter(4)
+    enviar_caracter(5)
     enviar_caracter(valor)
