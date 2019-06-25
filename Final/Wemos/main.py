@@ -32,21 +32,23 @@ while True:
     # print(sqrt(sensor.acceleration[0]**2 +
     #            sensor.acceleration[1]**2 +
     #            sensor.acceleration[2]**2))
-    # print('aceleracion:', sensor.acceleration)
-    # print('giro:', sensor.gyro)
+    print('aceleracion:', sensor.acceleration)
+    print('giro:', sensor.gyro)
     gy2 = sensor.gyro
     dt = utime.ticks_us() - tic
 
+    ''' Integración Mathi
     # angx += (gy2[0]+gy1[0])*(dt+dt2)/2000000
     # angy += (gy2[1]+gy1[1])*(dt+dt2)/2000000
     # angz += (gy2[2]+gy1[2])*(dt+dt2)/2000000
+    '''
 
-    # print(angx, angy, angz)
+    print(angx, angy, angz)
 
-    x = adx.xValue - x0
-    y = adx.yValue - y0
-    z = adx.zValue - z0
-    print('The Position info of x, y, z are: %d, %d, %d' % (x, y, z))
+    # x = adx.xValue - x0
+    # y = adx.yValue - y0
+    # z = adx.zValue - z0
+    # print('The Position info of x, y, z are: %d, %d, %d' % (x, y, z))
 
     utime.sleep_ms(1000)
     gy1 = gy2
