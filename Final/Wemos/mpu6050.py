@@ -42,7 +42,7 @@ micropython.alloc_emergency_exception_buf(100)
 default_pin_scl = 5
 default_pin_sda = 4
 default_pin_intr = 14
-default_pin_led = 9
+default_pin_led = 0
 default_sample_rate = 0x20
 
 default_calibration_numsamples = 200
@@ -81,9 +81,10 @@ class MPU(object):
 
         self.calibration = [0] * 7
 
-        self.filter = cfilter.ComplementaryFilter()
+        self.filter = cfilter.ComplementaryFilter(gyro_weight=0.5)
 
         self.init_pins()
+        self.init_led()
         self.init_i2c()
         self.init_device()
 
@@ -118,6 +119,9 @@ class MPU(object):
         print('* initializing pins')
         self.pin_sda = Pin(self.sda, Pin.PULL_UP)
         self.pin_scl = Pin(self.scl, Pin.PULL_UP)
+        print('AA')
+        self.pin_led = PWM(Pin(self.led, mode=Pin.OUT))
+        print('BB')
 
     def set_state_uncalibrated(self):
         self.pin_led.freq(1)
