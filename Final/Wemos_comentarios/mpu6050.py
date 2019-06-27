@@ -42,7 +42,6 @@ micropython.alloc_emergency_exception_buf(100)
 default_pin_scl = 5
 default_pin_sda = 4
 default_pin_intr = 14
-default_pin_led = 0
 default_sample_rate = 0x20
 
 default_calibration_numsamples = 200
@@ -63,13 +62,12 @@ class CalibrationFailure(Exception):
 
 class MPU(object):
     def __init__(self, scl=None, sda=None,
-                 intr=None, led=None, rate=None,
+                 intr=None, rate=None,
                  address=None):
 
         self.scl = scl if scl is not None else default_pin_scl
         self.sda = sda if sda is not None else default_pin_sda
         self.intr = intr if intr is not None else default_pin_intr
-        self.led = led if led is not None else default_pin_led
         self.rate = rate if rate is not None else default_sample_rate
 
         self.address = address if address else MPU6050_DEFAULT_ADDRESS
@@ -84,7 +82,6 @@ class MPU(object):
         self.filter = cfilter.ComplementaryFilter(gyro_weight=0.5)
 
         self.init_pins()
-        self.init_led()
         self.init_i2c()
         self.init_device()
 
@@ -119,27 +116,6 @@ class MPU(object):
         print('* initializing pins')
         self.pin_sda = Pin(self.sda, Pin.PULL_UP)
         self.pin_scl = Pin(self.scl, Pin.PULL_UP)
-        print('AA')
-        self.pin_led = PWM(Pin(self.led, mode=Pin.OUT))
-        print('BB')
-
-    def set_state_uncalibrated(self):
-        self.pin_led.freq(1)
-        self.pin_led.duty(500)
-
-    def set_state_calibrating(self):
-        self.pin_led.freq(10)
-        self.pin_led.duty(500)
-
-    def set_state_calibrated(self):
-        self.pin_led.freq(1000)
-        self.pin_led.duty(500)
-
-    def set_state_disabled(self):
-        self.pin_led.duty(0)
-
-    def init_led(self):
-        self.set_state_uncalibrated()
 
     def identify(self):
         print('* identifying i2c device')
@@ -314,7 +290,6 @@ class MPU(object):
                          else default_calibration_gyro_deadzone)
 
         print('* start calibration')
-        self.set_state_calibrating()
 
         try:
             self.wait_for_stable()
@@ -327,7 +302,6 @@ class MPU(object):
                    for i in range(7)]
 
             accel_ready = False
-            # gyro_read = False
             for passno in range(20):
                 self.calibration = off
                 avg = self.get_sensor_avg(numsamples)
@@ -358,8 +332,6 @@ class MPU(object):
         except CalibrationFailure:
             self.calibration = old_calibration
             print('! calibration failed')
-            self.set_state_uncalibrated()
             return
 
         print('* calibrated!')
-        self.set_state_calibrated()

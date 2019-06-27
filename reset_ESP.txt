@@ -4,7 +4,7 @@ esptool.py --port COM3 erase_flash
 
 Deploy the firmware:
 
-esptool.py --port COM3 --baud 460800 write_flash --flash_size=detect 0 esp8266-20190125-v1.10.bin
+esptool.py --port COM3 --baud 460800 write_flash --flash_size=detect 0 esp8266-20190529-v1.11.bin
 
 Módulos:
 
