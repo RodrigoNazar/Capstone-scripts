@@ -35,6 +35,8 @@ class PID(object):
         else:
             if self.ilim1 < dato < self.ilim2:
                 self._i += self.ki * (error + self.error_ans) * dt / 2
+            else:
+                self._i = 0
 
             d_error = self.kd * (error - self.error_ans) / dt
             i_error = self._i

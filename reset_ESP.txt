@@ -6,12 +6,13 @@ Deploy the firmware:
 
 esptool.py --port COM3 --baud 460800 write_flash --flash_size=detect 0 esp8266-20190529-v1.11.bin
 
-Módulos:
+Mï¿½dulos:
 
-ampy --port COM3 put boot.py
+ampy --port COM3 ls
+ampy --port COM3 put cfilter.mpy
+ampy --port COM3 put hcsr04.mpy
+ampy --port COM3 put mpu6050.mpy
+ampy --port COM3 put PID.mpy
 ampy --port COM3 put main.py
-ampy --port COM3 put mpu9250.py
-ampy --port COM3 put imu.py
-ampy --port COM3 put vector3d.py
 
 ampy --port COM3 ls
