@@ -8,13 +8,13 @@ from machine import UART, freq, Pin
 freq(160000000)
 
 
-def sat(valor):
-    if 42 < valor < 130:
+def sat(valor, a=50, b=100):
+    if a < valor < b:
         return valor
-    elif valor <= 42:
-        return 42
+    elif valor <= a:
+        return a
     else:
-        return 130
+        return b
 
 
 micropython.alloc_emergency_exception_buf(100)
@@ -33,13 +33,13 @@ print('\n\n\t\tConecta los ESC\n\n')
 led.value(0)
 time.sleep(5)
 
-roll = PID(kp=0.3, ki=0, kd=0)
-pitch = PID(kp=0.3, ki=0, kd=0)
+roll = PID(kp=0.5, ki=0, kd=0, ref=0, ilim=(-5, 5))
+pitch = PID(kp=0.5, ki=0, kd=0, ref=0, ilim=(-5, 5))
 
-gyro_roll = PID(kp=0.3, ki=0.05, kd=0, ref=0, ilim=(-2, 2))
-gyro_pitch = PID(kp=0.3, ki=0.05, kd=0, ref=0, ilim=(-2, 2))
+gyro_roll = PID(kp=0.3, ki=0.2, kd=0.01, ref=0, ilim=(-10, 10))
+gyro_pitch = PID(kp=0.3, ki=0.2, kd=0.01, ref=0, ilim=(-10, 10))
 
-pwmi = 85
+pwmi = 70
 pwm1 = pwmi
 pwm2 = pwmi
 pwm3 = pwmi
@@ -50,8 +50,9 @@ led.value(1)
 uart.write(bytes([0]))
 time.sleep(5)
 
-uart.write(bytes([7]))
+uart.write(bytes([6]))
 uart.write(bytes([pwmi]))
+uart.write(bytes([1]))
 
 
 while True:
@@ -59,21 +60,24 @@ while True:
     filtro = medicion[0]
     gyro_rate = mpu.read_sensors_scaled()[4:7]
     # distance = sensor.distance_cm()
-    d1 = pitch.calcular(filtro[0])
-    gyro_pitch.ref = d1
-    d = gyro_pitch(gyro_rate[0])
-    pwm1 = sat(pwm1 + int(d / 2))
-    pwm2 = sat(pwm2 - int(d / 2))
-    uart.write(bytes([1]))
-    uart.write(bytes([pwm1]))
-    uart.write(bytes([2]))
-    uart.write(bytes([pwm2]))
+    # d1 = pitch.calcular(filtro[0])
+    # gyro_pitch.ref = d1
+    # d = gyro_pitch.calcular(gyro_rate[0])
+    # pwm1 = sat(pwm1 + round(d / 2))
+    # pwm2 = sat(pwm2 - round(d / 2))
+    # uart.write(bytes([1]))
+    # uart.write(bytes([pwm1]))
+    # uart.write(bytes([2]))
+    # uart.write(bytes([pwm2]))
 
     d1 = roll.calcular(filtro[1])
+    # print('control1: ', d1)
     gyro_roll.ref = d1
-    d = gyro_roll(gyro_rate[1])
-    pwm3 = sat(pwm3 - int(d / 2))
-    pwm4 = sat(pwm4 + int(d / 2))
+    d = gyro_roll.calcular(gyro_rate[1])
+    # print('control2: ', d)
+
+    pwm3 = sat(pwm3 - round(d / 2))
+    pwm4 = sat(pwm4 + round(d / 2))
     uart.write(bytes([3]))
     uart.write(bytes([pwm3]))
     uart.write(bytes([4]))
