@@ -7,6 +7,7 @@ from machine import UART, freq, Pin
 
 freq(160000000)
 
+
 def sat(valor):
     if 42 < valor < 130:
         return valor
@@ -53,6 +54,7 @@ uart.write(bytes([pwmi]))
 while True:
     medicion = mpu.read_position()
     filtro = medicion[0]
+    print(mpu.read_sensors_scaled()[4:7])
     # distance = sensor.distance_cm()
     d = pitch.calcular(filtro[0])
     pwm1 = sat(pwm1 + int(d / 2))
