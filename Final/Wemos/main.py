@@ -33,8 +33,11 @@ print('\n\n\t\tConecta los ESC\n\n')
 led.value(0)
 time.sleep(5)
 
-roll = PID(kp=0.3, ki=0.05, kd=0)
-pitch = PID(kp=0.3, ki=0.05, kd=0)
+roll = PID(kp=0.3, ki=0, kd=0)
+pitch = PID(kp=0.3, ki=0, kd=0)
+
+gyro_roll = PID(kp=0.3, ki=0.05, kd=0, ref=0, ilim=(-2, 2))
+gyro_pitch = PID(kp=0.3, ki=0.05, kd=0, ref=0, ilim=(-2, 2))
 
 pwmi = 85
 pwm1 = pwmi
@@ -54,9 +57,11 @@ uart.write(bytes([pwmi]))
 while True:
     medicion = mpu.read_position()
     filtro = medicion[0]
-    print(mpu.read_sensors_scaled()[4:7])
+    gyro_rate = mpu.read_sensors_scaled()[4:7]
     # distance = sensor.distance_cm()
-    d = pitch.calcular(filtro[0])
+    d1 = pitch.calcular(filtro[0])
+    gyro_pitch.ref = d1
+    d = gyro_pitch(gyro_rate[0])
     pwm1 = sat(pwm1 + int(d / 2))
     pwm2 = sat(pwm2 - int(d / 2))
     uart.write(bytes([1]))
@@ -64,7 +69,9 @@ while True:
     uart.write(bytes([2]))
     uart.write(bytes([pwm2]))
 
-    d = roll.calcular(filtro[1])
+    d1 = roll.calcular(filtro[1])
+    gyro_roll.ref = d1
+    d = gyro_roll(gyro_rate[1])
     pwm3 = sat(pwm3 - int(d / 2))
     pwm4 = sat(pwm4 + int(d / 2))
     uart.write(bytes([3]))
