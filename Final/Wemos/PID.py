@@ -15,6 +15,11 @@ class PID(object):
         self.error_ans = 0
         self.last = 0
 
+    def reset(self):
+        self._i = 0
+        self.primer_ciclo = True
+        self.error_ans = 0
+
     def nueva_ref(self, valor):
         self.ref = valor
         self.primer_ciclo = True
