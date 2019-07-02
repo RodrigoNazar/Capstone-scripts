@@ -11,7 +11,7 @@ micropython.alloc_emergency_exception_buf(100)
 led = Pin(2, Pin.OUT)
 led.value(1)
 
-roll = PID(kp=0.3*.45, ki=0, kd=0, ref=0, ilim=(-5, 5))
+roll = PID(kp=0.135 + .1, ki=.2251, kd=0.0343, ref=0, ilim=(-10, 10))
 # pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
 pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
 
@@ -31,7 +31,7 @@ def cambio_duty(x):
 
 def algo_super_bacan():
     led.value(0)
-    uart.write(bytes([5]))
+    uart.write(bytes([6]))
     uart.write(bytes([42]))
     roll.reset()
     pitch.reset()
@@ -72,18 +72,15 @@ print('\n\n\t\tConecta los ESC\n\n')
 led.value(0)
 time.sleep(5)
 
-pwmi = 70
-pwm10 = pwmi
-pwm20 = pwmi
-pwm30 = pwmi
-pwm40 = pwmi
+pwmi = 70 + 30
+pwm10, pwm20, pwm30, pwm40 = pwmi, pwmi, pwmi, pwmi
 
 led.value(1)
 
 uart.write(bytes([0]))
 time.sleep(5)
 
-uart.write(bytes([5]))
+uart.write(bytes([6]))
 uart.write(bytes([pwmi]))
 
 while True:
@@ -98,12 +95,13 @@ while True:
     d = pitch.calcular(filtro[0])
     # gyro_pitch.ref = d1
     # d = gyro_pitch.calcular(gyro_rate[0])
-    pwm1 = sat(cambio_duty(pwm10 + round(d / 2)))
-    pwm2 = sat(pwm20 - round(d / 2))
-    uart.write(bytes([1]))
-    uart.write(bytes([pwm1]))
-    uart.write(bytes([2]))
-    uart.write(bytes([pwm2]))
+
+    # pwm1 = sat(cambio_duty(pwm10 + round(d / 2)))
+    # pwm2 = sat(pwm20 - round(d / 2))
+    # uart.write(bytes([1]))
+    # uart.write(bytes([pwm1]))
+    # uart.write(bytes([2]))
+    # uart.write(bytes([pwm2]))
 
     d = roll.calcular(filtro[1])
     # print('control1: ', d1)
@@ -111,9 +109,9 @@ while True:
     # d = gyro_roll.calcular(gyro_rate[1])
     # print('control2: ', d)
 
-    # pwm3 = sat(pwm30 - round(d / 2))
-    # pwm4 = sat(pwm40 + round(d / 2))
-    # uart.write(bytes([3]))
-    # uart.write(bytes([pwm3]))
-    # uart.write(bytes([4]))
-    # uart.write(bytes([pwm4]))
+    pwm3 = sat(pwm30 - round(d / 2))
+    pwm4 = sat(pwm40 + round(d / 2))
+    uart.write(bytes([3]))
+    uart.write(bytes([pwm3]))
+    uart.write(bytes([4]))
+    uart.write(bytes([pwm4]))
