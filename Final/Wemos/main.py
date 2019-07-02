@@ -13,13 +13,16 @@ led.value(1)
 
 roll = PID(kp=0.135 + .1, ki=.2251, kd=0.0343, ref=0, ilim=(-10, 10))
 # pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
-pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
+pitch = PID(kp=0.5 * .45, ki=1.18 * .5 / .806, kd=0.074 * .5 * .806, ref=0, ilim=(-10, 10))
 
 # gyro_roll = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
 # gyro_pitch = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
 
 # D3 interrupcion boton
 p0 = Pin(0, Pin.IN, Pin.PULL_UP)
+
+pwmi = 70
+subir = True
 
 
 def cambio_duty(x):
@@ -30,13 +33,25 @@ def cambio_duty(x):
 
 
 def algo_super_bacan():
+    global pwmi
+    global subir
     led.value(0)
     uart.write(bytes([6]))
     uart.write(bytes([42]))
     roll.reset()
     pitch.reset()
-    roll.kp += 0.05
-    pitch.kp += 0.1
+    # roll.kp += 0.05
+    # pitch.kp += 0.1
+    if subir:
+        pwmi += 10
+    else:
+        pwmi -= 10
+
+    if pwmi == 150:
+        subir = False
+    elif pwmi == 60:
+        subir = True
+
     time.sleep(5)
     led.value(1)
 
@@ -72,9 +87,6 @@ print('\n\n\t\tConecta los ESC\n\n')
 led.value(0)
 time.sleep(5)
 
-pwmi = 70 + 30
-pwm10, pwm20, pwm30, pwm40 = pwmi, pwmi, pwmi, pwmi
-
 led.value(1)
 
 uart.write(bytes([0]))
@@ -96,8 +108,8 @@ while True:
     # gyro_pitch.ref = d1
     # d = gyro_pitch.calcular(gyro_rate[0])
 
-    # pwm1 = sat(cambio_duty(pwm10 + round(d / 2)))
-    # pwm2 = sat(pwm20 - round(d / 2))
+    # pwm1 = sat(cambio_duty(pwmi + round(d / 2)))
+    # pwm2 = sat(pwmi - round(d / 2))
     # uart.write(bytes([1]))
     # uart.write(bytes([pwm1]))
     # uart.write(bytes([2]))
@@ -109,9 +121,9 @@ while True:
     # d = gyro_roll.calcular(gyro_rate[1])
     # print('control2: ', d)
 
-    pwm3 = sat(pwm30 - round(d / 2))
-    pwm4 = sat(pwm40 + round(d / 2))
+    pwm3 = sat(pwmi - round(d / 2))
+    pwm4 = sat(pwmi + round(d / 2))
     uart.write(bytes([3]))
-    uart.write(bytes([pwm3]))
+    uart.write(bytes([pwmi]))
     uart.write(bytes([4]))
-    uart.write(bytes([pwm4]))
+    uart.write(bytes([pwmi]))
