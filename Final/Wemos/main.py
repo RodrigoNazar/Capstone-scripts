@@ -11,8 +11,9 @@ micropython.alloc_emergency_exception_buf(100)
 led = Pin(2, Pin.OUT)
 led.value(1)
 
-roll = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-5, 5))
-pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-5, 5))
+roll = PID(kp=0.3*.45, ki=0, kd=0, ref=0, ilim=(-5, 5))
+# pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
+pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
 
 # gyro_roll = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
 # gyro_pitch = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
@@ -30,12 +31,12 @@ def cambio_duty(x):
 
 def algo_super_bacan():
     led.value(0)
-    uart.write(bytes([6]))
+    uart.write(bytes([5]))
     uart.write(bytes([42]))
     roll.reset()
     pitch.reset()
     roll.kp += 0.05
-    pitch.kp += 0.05
+    pitch.kp += 0.1
     time.sleep(5)
     led.value(1)
 
@@ -82,7 +83,7 @@ led.value(1)
 uart.write(bytes([0]))
 time.sleep(5)
 
-uart.write(bytes([6]))
+uart.write(bytes([5]))
 uart.write(bytes([pwmi]))
 
 while True:
@@ -110,9 +111,9 @@ while True:
     # d = gyro_roll.calcular(gyro_rate[1])
     # print('control2: ', d)
 
-    pwm3 = sat(pwm30 - round(d / 2))
-    pwm4 = sat(pwm40 + round(d / 2))
-    uart.write(bytes([3]))
-    uart.write(bytes([pwm3]))
-    uart.write(bytes([4]))
-    uart.write(bytes([pwm4]))
+    # pwm3 = sat(pwm30 - round(d / 2))
+    # pwm4 = sat(pwm40 + round(d / 2))
+    # uart.write(bytes([3]))
+    # uart.write(bytes([pwm3]))
+    # uart.write(bytes([4]))
+    # uart.write(bytes([pwm4]))
