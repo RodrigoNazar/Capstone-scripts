@@ -104,22 +104,22 @@ class MPU(object):
         return unpack('>h', self.wordbuf)[0]
 
     def init_i2c(self):
-        print('* initializing i2c')
+        # print('* initializing i2c')
         self.bus = I2C(scl=self.pin_scl, sda=self.pin_sda)
 
     def init_pins(self):
-        print('* initializing pins')
+        # print('* initializing pins')
         self.pin_sda = Pin(self.sda, Pin.PULL_UP)
         self.pin_scl = Pin(self.scl, Pin.PULL_UP)
 
     def identify(self):
-        print('* identifying i2c device')
+        # print('* identifying i2c device')
         val = self.read_byte(MPU6050_RA_WHO_AM_I)
         if val != MPU6050_ADDRESS_AD0_LOW:
             raise OSError("No mpu6050 at address {}".format(self.address))
 
     def reset(self):
-        print('* reset')
+        # print('* reset')
         self.write_byte(MPU6050_RA_PWR_MGMT_1, (
             (1 << MPU6050_PWR1_DEVICE_RESET_BIT)
         ))
@@ -133,7 +133,7 @@ class MPU(object):
         time.sleep_ms(100)
 
     def init_device(self):
-        print('* initializing mpu')
+        # print('* initializing mpu')
 
         self.identify()
         self.write_byte(MPU6050_RA_PWR_MGMT_1, MPU6050_CLOCK_PLL_XGYRO)
@@ -220,7 +220,7 @@ class MPU(object):
     max_gyro_variance = 5
 
     def wait_for_stable(self, numsamples=10):
-        print('* waiting for gyros to stabilize')
+        # print('* waiting for gyros to stabilize')
 
         gc.collect()
         time_start = time.time()
@@ -250,7 +250,7 @@ class MPU(object):
                 break
 
         now = time.time()
-        print('* gyros stable after {:0.2f} seconds'.format(now-time_start))
+        # print('* gyros stable after {:0.2f} seconds'.format(now-time_start))
 
     def calibrate(self,
                   numsamples=None,
@@ -267,7 +267,7 @@ class MPU(object):
         gyro_deadzone = (gyro_deadzone if gyro_deadzone is not None
                          else default_calibration_gyro_deadzone)
 
-        print('* start calibration')
+        # print('* start calibration')
 
         try:
             self.wait_for_stable()
@@ -284,7 +284,7 @@ class MPU(object):
 
                 check = [0 if expected[i] is None else expected[i] - avg[i]
                          for i in range(7)]
-                print('- pass {}: {}'.format(passno, check))
+                # print('- pass {}: {}'.format(passno, check))
                 accel_ready = all(abs(x) < accel_deadzone
                                   for x in check[0:3])
                 gyro_ready = all(abs(x) < gyro_deadzone
@@ -304,7 +304,8 @@ class MPU(object):
                 raise CalibrationFailure()
         except CalibrationFailure:
             self.calibration = old_calibration
-            print('! calibration failed')
-            return
+            # print('! calibration failed')
+            return False
 
-        print('* calibrated!')
+        # print('* calibrated!')
+        return True

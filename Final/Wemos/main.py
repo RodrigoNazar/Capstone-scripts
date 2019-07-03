@@ -22,11 +22,11 @@ mediana_roll = Mediana()
 mediana_pitch = Mediana()
 
 ####################### Pines de interrupcion #################################
-d3 = Pin(0, Pin.IN, Pin.PULL_UP)    #D3 interrupcion boton
-d5 = Pin(14, Pin.IN) #D5
-d6 = Pin(12, Pin.IN) #D6
-d7 = Pin(13, Pin.IN) #D7
-d8 = Pin(15, Pin.IN) #D8
+d3 = Pin(0, Pin.IN, Pin.PULL_UP)  #D3 interrupcion boton
+d5 = Pin(14, Pin.IN, Pin.PULL_UP) #D5
+d6 = Pin(12, Pin.IN, Pin.PULL_UP) #D6
+d7 = Pin(13, Pin.IN, Pin.PULL_UP) #D7
+d8 = Pin(15, Pin.IN, Pin.PULL_UP) #D8
 
 ####################### Funciones de interrupcion #############################
 
@@ -57,10 +57,10 @@ def int_d8(v):
     interrupcion_d8 = True
 
 d3.irq(handler=int_d3, trigger=Pin.IRQ_FALLING)
-d5.irq(handler=int_d5, trigger=Pin.IRQ_RISING)
-d6.irq(handler=int_d6, trigger=Pin.IRQ_RISING)
-d7.irq(handler=int_d7, trigger=Pin.IRQ_RISING)
-d8.irq(handler=int_d8, trigger=Pin.IRQ_RISING)
+d5.irq(handler=int_d5, trigger=Pin.IRQ_FALLING)
+d6.irq(handler=int_d6, trigger=Pin.IRQ_FALLING)
+d7.irq(handler=int_d7, trigger=Pin.IRQ_FALLING)
+d8.irq(handler=int_d8, trigger=Pin.IRQ_FALLING)
 
 ############################# LED para indicar calibracion ####################
 
@@ -87,12 +87,12 @@ def sat(valor, a=50, b=190):
 ########################### Variables globales ################################
 
 pwmi = 140
-i = 0
+i = 57
+ref_altura = 5 # en cm
 
 ########################### Funciones desatadas por int #######################
 
 def int_desatada_d3():
-    global pwmi
     global constantes
     global i
     led.value(0)
@@ -106,22 +106,50 @@ def int_desatada_d3():
     time.sleep(5)
     led.value(1)
 
+def int_desatada_d5():
+    global pwmi
+    if pwmi < 190:
+        pwmi += 1
+
+def int_desatada_d6():
+    global pwmi
+    if pwmi > 42:
+        pwmi -= 1
+
+def int_desatada_d7():
+    global ref_altura
+    if ref_altura < 120:
+        pwmi += 1
+
+def int_desatada_d8():
+    global ref_altura
+    if ref_altura > 2:
+        pwmi -= 1
+
 ######################## Iniciar sensores #####################################
 
 # sensor = HCSR04(trigger_pin=14, echo_pin=12) # cambiar pines
 mpu = mpu6050.MPU()
 
-####################### Calibrar ESC e iniciar ################################
+####################### Calibrar e iniciar ####################################
 
-mpu.calibrate()
-print('\n\n\t\tConecta los ESC\n\n')
-led.value(0)
-time.sleep(5)
-led.value(1)
-uart.write(bytes([0]))
-time.sleep(5)
-uart.write(bytes([6]))
-uart.write(bytes([pwmi]))
+calibrado = mpu.calibrate()
+if calibrado:
+    led.value(0)
+    time.sleep(6)
+    led.value(1)
+    uart.write(bytes([0]))
+    time.sleep(5)
+    led.value(0)
+    uart.write(bytes([6]))
+    uart.write(bytes([pwmi]))
+else:
+    while True:
+        led.value(0)
+        time.sleep(0.125)
+        led.value(1)
+        time.sleep(0.125)
+
 
 ####################### Ciclo principal #######################################
 
