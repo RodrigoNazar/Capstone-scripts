@@ -5,90 +5,71 @@ from hcsr04 import HCSR04
 from PID import PID
 from machine import UART, freq, Pin
 from Mediana import Mediana
+from k import constantes
 
 freq(160000000)
 micropython.alloc_emergency_exception_buf(100)
 
+########################### Instanciar filtros ################################
+roll = PID(kp=0.1, ki=.0, kd=.0, ref=0, ilim=(-10, 10))
+pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
 mediana_roll = Mediana()
 mediana_pitch = Mediana()
+
+####################### Pines de interrupcion #################################
+d3 = Pin(0, Pin.IN, Pin.PULL_UP)    #D3 interrupcion boton
+d5 = Pin(14, Pin.IN, Pin.PULL_DOWN) #D5
+d6 = Pin(12, Pin.IN, Pin.PULL_DOWN) #D6
+d7 = Pin(13, Pin.IN, Pin.PULL_DOWN) #D7
+d8 = Pin(15, Pin.IN, Pin.PULL_DOWN) #D8
+
+####################### Funciones de interrupcion #############################
+
+interrupcion_d3 = False
+interrupcion_d5 = False
+interrupcion_d6 = False
+interrupcion_d7 = False
+interrupcion_d8 = False
+
+def int_d3(v):
+    global interrupcion_d3
+    interrupcion = True
+
+def int_d5(v):
+    global interrupcion_d5
+    interrupcion = True
+
+def int_d6(v):
+    global interrupcion_d6
+    interrupcion = True
+
+def int_d7(v):
+    global interrupcion_d7
+    interrupcion = True
+
+def int_d8(v):
+    global interrupcion_d8
+    interrupcion = True
+
+d3.irq(handler=int_d3, trigger=Pin.IRQ_FALLING)
+d5.irq(handler=int_d5, trigger=Pin.IRQ_RISING)
+d6.irq(handler=int_d6, trigger=Pin.IRQ_RISING)
+d7.irq(handler=int_d7, trigger=Pin.IRQ_RISING)
+d8.irq(handler=int_d8, trigger=Pin.IRQ_RISING)
+
+############################# LED para indicar calibracion ####################
 
 led = Pin(2, Pin.OUT)
 led.value(1)
 
-# roll = PID(kp=0.135 + .1, ki=.2251, kd=0.0343, ref=0, ilim=(-10, 10))
-roll = PID(kp=.01, ki=.0, kd=.0, ref=0, ilim=(-10, 10))
-
-# pitch = PID(kp=0.5 * .45, ki=1.18 * .5 / .806, kd=0.074 * .5 * .806, ref=0, ilim=(-10, 10))
-pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
-
-# gyro_roll = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
-# gyro_pitch = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
-
-# D3 interrupcion boton
-p0 = Pin(0, Pin.IN, Pin.PULL_UP)
-
-pwmi = 140
-subir = True
-
+############################ Funcion para el ESC malo ########################
 
 def cambio_duty(x):
     if x <= 43:
         return x
-
     return round(1.5249 * x - 16.222)
 
-
-def algo_super_bacan():
-    global pwmi
-    global subir
-    led.value(0)
-    # uart.write(bytes([7]))
-    # uart.write(bytes([100]))
-    # time.sleep(.2)
-    # uart.write(bytes([7]))
-    # uart.write(bytes([70]))
-    # time.sleep(.2)
-    # uart.write(bytes([7]))
-    # uart.write(bytes([50]))
-    # time.sleep(.2)
-    uart.write(bytes([6]))
-    uart.write(bytes([42]))
-    roll.reset()
-    pitch.reset()
-    roll.kp += 0.1
-    pitch.kp += 0.1
-    if subir:
-        roll.kp += 0.01
-        pitch.kp += 0.01
-        # pwmi += 10
-    else:
-        roll.kp -= 0.01
-        pitch.kp -= 0.01
-        # pwmi -= 10
-
-    # if pwmi == 190:
-    #     subir = False
-    # elif pwmi == 60:
-    #     subir = True
-    if roll.kp == 1:
-        subir = False
-    elif roll.kp == .1:
-        subir = True
-
-    time.sleep(5)
-    led.value(1)
-
-
-interrupcion = False
-
-
-def f_int(v):
-    global interrupcion
-    interrupcion = True
-
-
-p0.irq(handler=f_int, trigger=Pin.IRQ_FALLING)
-
+############################ Funcion saturacion ###############################
 
 def sat(valor, a=50, b=190):
     if a < valor < b:
@@ -98,30 +79,72 @@ def sat(valor, a=50, b=190):
     else:
         return b
 
+########################### Variables globales ################################
+
+pwmi = 140
+i = 0
+
+########################### Funciones desatadas por int #######################
+
+def int_desatada_d3():
+    global pwmi
+    global constantes
+    global i
+    led.value(0)
+    uart.write(bytes([6]))
+    uart.write(bytes([42]))
+    roll.reset()
+    roll.kp, roll.ki, roll.kd = constantes[i]
+    i += 1
+    if i == len(constantes):
+        i = 0
+    time.sleep(5)
+    led.value(1)
+
+######################## Iniciar UART #########################################
 
 uart = UART(0)  # init with given baudrate
 uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
 
-sensor = HCSR04(trigger_pin=14, echo_pin=12)
+######################## Iniciar sensores #####################################
 
+sensor = HCSR04(trigger_pin=14, echo_pin=12)
 mpu = mpu6050.MPU()
+
+####################### Calibrar ESC e iniciar ################################
+
 mpu.calibrate()
 print('\n\n\t\tConecta los ESC\n\n')
 led.value(0)
 time.sleep(5)
-
 led.value(1)
-
 uart.write(bytes([0]))
 time.sleep(5)
-
 uart.write(bytes([6]))
 uart.write(bytes([pwmi]))
 
+####################### Ciclo principal #######################################
+
 while True:
-    if interrupcion:
-        algo_super_bacan()
-        interrupcion = False
+    if interrupcion_d3:
+        int_desatada_d3()
+        interrupcion_d3 = False
+
+    if interrupcion_d5:
+        int_desatada_d5()
+        interrupcion_d5 = False
+
+    if interrupcion_d6:
+        int_desatada_d6()
+        interrupcion_d6 = False
+
+    if interrupcion_d7:
+        int_desatada_d7()
+        interrupcion_d7 = False
+
+    if interrupcion_d8:
+        int_desatada_d8()
+        interrupcion_d8 = False
 
     medicion = mpu.read_position()
     filtro = medicion[0]

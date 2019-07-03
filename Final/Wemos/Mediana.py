@@ -21,4 +21,4 @@ class Mediana:
     def medicion(self):
         if self.cola[self.n-1] == None:
             return self.cola[0]
-        return quicksort(self.cola)[(self.n-1)/2]
+        return quicksort(self.cola)[int((self.n-1)/2)]
