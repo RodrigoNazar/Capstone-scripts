@@ -4,9 +4,13 @@ import micropython
 from hcsr04 import HCSR04
 from PID import PID
 from machine import UART, freq, Pin
+from Mediana import Mediana
 
 freq(160000000)
 micropython.alloc_emergency_exception_buf(100)
+
+mediana_roll = Mediana()
+mediana_pitch = Mediana()
 
 led = Pin(2, Pin.OUT)
 led.value(1)
@@ -121,9 +125,12 @@ while True:
 
     medicion = mpu.read_position()
     filtro = medicion[0]
+    mediana_pitch.add(filtro[0])
+    mediana_roll.add(filtro[1])
     # gyro_rate = mpu.read_sensors_scaled()[4:7]
     # distance = sensor.distance_cm()
-    d = pitch.calcular(filtro[0])
+    # d = pitch.calcular(filtro[0])
+    d = pitch.calcular(mediana_pitch.medicion())
     # gyro_pitch.ref = d1
     # d = gyro_pitch.calcular(gyro_rate[0])
 
@@ -134,7 +141,8 @@ while True:
     # uart.write(bytes([2]))
     # uart.write(bytes([sat(pwm1)]))
 
-    d = roll.calcular(filtro[1])
+    # d = roll.calcular(filtro[1])
+    d = roll.calcular(mediana_roll.medicion())
     # print('control1: ', d1)
     # gyro_roll.ref = d1
     # d = gyro_roll.calcular(gyro_rate[1])

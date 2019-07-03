@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <avr/interrupt.h>
 #include "./libreria/mi_uart.h"
 #define F_CPU 16000000UL
@@ -7,7 +8,9 @@
 #define MIN 41
 
 
-char recibido;
+unsigned char recibido;
+
+//char msj[10];
 
 
 enum accion{
@@ -86,6 +89,9 @@ void calibrar(void){
 
 ISR (USART_RX_vect) {
     recibido = UDR0;
+    /*sprintf(msj, "%d\n", recibido);
+    enviar_str(msj);
+    enviar_caracter(recibido);*/
 
     if (recibido == 0) {
         calibrar();
