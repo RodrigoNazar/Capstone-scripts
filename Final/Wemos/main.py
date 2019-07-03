@@ -10,6 +10,11 @@ from k import constantes
 freq(160000000)
 micropython.alloc_emergency_exception_buf(100)
 
+######################## Iniciar UART #########################################
+
+uart = UART(0)  # init with given baudrate
+uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
+
 ########################### Instanciar filtros ################################
 roll = PID(kp=0.1, ki=.0, kd=.0, ref=0, ilim=(-10, 10))
 pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
@@ -18,10 +23,10 @@ mediana_pitch = Mediana()
 
 ####################### Pines de interrupcion #################################
 d3 = Pin(0, Pin.IN, Pin.PULL_UP)    #D3 interrupcion boton
-d5 = Pin(14, Pin.IN, Pin.PULL_DOWN) #D5
-d6 = Pin(12, Pin.IN, Pin.PULL_DOWN) #D6
-d7 = Pin(13, Pin.IN, Pin.PULL_DOWN) #D7
-d8 = Pin(15, Pin.IN, Pin.PULL_DOWN) #D8
+d5 = Pin(14, Pin.IN) #D5
+d6 = Pin(12, Pin.IN) #D6
+d7 = Pin(13, Pin.IN) #D7
+d8 = Pin(15, Pin.IN) #D8
 
 ####################### Funciones de interrupcion #############################
 
@@ -33,23 +38,23 @@ interrupcion_d8 = False
 
 def int_d3(v):
     global interrupcion_d3
-    interrupcion = True
+    interrupcion_d3 = True
 
 def int_d5(v):
     global interrupcion_d5
-    interrupcion = True
+    interrupcion_d5 = True
 
 def int_d6(v):
     global interrupcion_d6
-    interrupcion = True
+    interrupcion_d6 = True
 
 def int_d7(v):
     global interrupcion_d7
-    interrupcion = True
+    interrupcion_d7 = True
 
 def int_d8(v):
     global interrupcion_d8
-    interrupcion = True
+    interrupcion_d8 = True
 
 d3.irq(handler=int_d3, trigger=Pin.IRQ_FALLING)
 d5.irq(handler=int_d5, trigger=Pin.IRQ_RISING)
@@ -101,14 +106,9 @@ def int_desatada_d3():
     time.sleep(5)
     led.value(1)
 
-######################## Iniciar UART #########################################
-
-uart = UART(0)  # init with given baudrate
-uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
-
 ######################## Iniciar sensores #####################################
 
-sensor = HCSR04(trigger_pin=14, echo_pin=12)
+# sensor = HCSR04(trigger_pin=14, echo_pin=12) # cambiar pines
 mpu = mpu6050.MPU()
 
 ####################### Calibrar ESC e iniciar ################################
