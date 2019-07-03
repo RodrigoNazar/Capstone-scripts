@@ -11,9 +11,11 @@ micropython.alloc_emergency_exception_buf(100)
 led = Pin(2, Pin.OUT)
 led.value(1)
 
-roll = PID(kp=0.135 + .1, ki=.2251, kd=0.0343, ref=0, ilim=(-10, 10))
-# pitch = PID(kp=0.5*.45, ki=1.18*.5/.806, kd=0.074*.5*.806, ref=0, ilim=(-10, 10))
-pitch = PID(kp=0.5 * .45, ki=1.18 * .5 / .806, kd=0.074 * .5 * .806, ref=0, ilim=(-10, 10))
+# roll = PID(kp=0.135 + .1, ki=.2251, kd=0.0343, ref=0, ilim=(-10, 10))
+roll = PID(kp=.01, ki=.0, kd=.0, ref=0, ilim=(-10, 10))
+
+# pitch = PID(kp=0.5 * .45, ki=1.18 * .5 / .806, kd=0.074 * .5 * .806, ref=0, ilim=(-10, 10))
+pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
 
 # gyro_roll = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
 # gyro_pitch = PID(kp=0.7, ki=0, kd=0, ref=0, ilim=(-10, 10))
@@ -21,7 +23,7 @@ pitch = PID(kp=0.5 * .45, ki=1.18 * .5 / .806, kd=0.074 * .5 * .806, ref=0, ilim
 # D3 interrupcion boton
 p0 = Pin(0, Pin.IN, Pin.PULL_UP)
 
-pwmi = 70
+pwmi = 140
 subir = True
 
 
@@ -36,20 +38,37 @@ def algo_super_bacan():
     global pwmi
     global subir
     led.value(0)
+    # uart.write(bytes([7]))
+    # uart.write(bytes([100]))
+    # time.sleep(.2)
+    # uart.write(bytes([7]))
+    # uart.write(bytes([70]))
+    # time.sleep(.2)
+    # uart.write(bytes([7]))
+    # uart.write(bytes([50]))
+    # time.sleep(.2)
     uart.write(bytes([6]))
     uart.write(bytes([42]))
     roll.reset()
     pitch.reset()
-    # roll.kp += 0.05
-    # pitch.kp += 0.1
+    roll.kp += 0.1
+    pitch.kp += 0.1
     if subir:
-        pwmi += 10
+        roll.kp += 0.01
+        pitch.kp += 0.01
+        # pwmi += 10
     else:
-        pwmi -= 10
+        roll.kp -= 0.01
+        pitch.kp -= 0.01
+        # pwmi -= 10
 
-    if pwmi == 150:
+    # if pwmi == 190:
+    #     subir = False
+    # elif pwmi == 60:
+    #     subir = True
+    if roll.kp == 1:
         subir = False
-    elif pwmi == 60:
+    elif roll.kp == .1:
         subir = True
 
     time.sleep(5)
@@ -67,7 +86,7 @@ def f_int(v):
 p0.irq(handler=f_int, trigger=Pin.IRQ_FALLING)
 
 
-def sat(valor, a=50, b=150):
+def sat(valor, a=50, b=190):
     if a < valor < b:
         return valor
     elif valor <= a:
@@ -111,9 +130,9 @@ while True:
     # pwm1 = sat(cambio_duty(pwmi + round(d / 2)))
     # pwm2 = sat(pwmi - round(d / 2))
     # uart.write(bytes([1]))
-    # uart.write(bytes([pwm1]))
+    # uart.write(bytes([sat(cambio_duty(pwm1))]))
     # uart.write(bytes([2]))
-    # uart.write(bytes([pwm2]))
+    # uart.write(bytes([sat(pwm1)]))
 
     d = roll.calcular(filtro[1])
     # print('control1: ', d1)
@@ -124,6 +143,6 @@ while True:
     pwm3 = sat(pwmi - round(d / 2))
     pwm4 = sat(pwmi + round(d / 2))
     uart.write(bytes([3]))
-    uart.write(bytes([pwmi]))
+    uart.write(bytes([sat(pwm3)]))
     uart.write(bytes([4]))
-    uart.write(bytes([pwmi]))
+    uart.write(bytes([sat(pwm4)]))
