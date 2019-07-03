@@ -28,25 +28,25 @@ while True:
     data = cl.recv(1024)
 
     if data == 1:
-        d3.value(0)
-        utime.sleep_us(10)
         d3.value(1)
+        utime.sleep_us(10)
+        d3.value(0)
     elif data == 2:
-        d5.value(0)
-        utime.sleep_us(10)
         d5.value(1)
+        utime.sleep_us(10)
+        d5.value(0)
     elif data == 3:
-        d6.value(0)
-        utime.sleep_us(10)
         d6.value(1)
+        utime.sleep_us(10)
+        d6.value(0)
     elif data == 4:
-        d7.value(0)
-        utime.sleep_us(10)
         d7.value(1)
-    elif data == 5:
-        d8.value(0)
         utime.sleep_us(10)
+        d7.value(0)
+    elif data == 5:
         d8.value(1)
+        utime.sleep_us(10)
+        d8.value(0)
 
 
     cl.close()
