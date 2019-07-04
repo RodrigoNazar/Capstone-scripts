@@ -26,7 +26,7 @@ class PID(object):
         self._i = 0
         self.error_ans = 0
 
-    def calcular(self, dato):
+    def calcular(self, dato, dato_dev=None):
         now = time.ticks_ms()
         error = self.ref - dato
         dt = time.ticks_diff(now, self.last) / 1000
@@ -39,13 +39,19 @@ class PID(object):
             self.primer_ciclo = False
         else:
             if self.ilim1 < dato < self.ilim2:
-                self._i += self.ki * (error + self.error_ans) * dt / 2
-                i_error = self._i
+                self._i +=  error * dt
+                if self._i > 300:
+                    self._i = 300
+                elif self._i < -300:
+                    self._i = -300
+                i_error = self.ki * self._i
             else:
                 i_error = 0
 
-            d_error = self.kd * (error - self.error_ans) / dt
-
+            if dato_dev is None:
+                d_error = self.kd * (error - self.error_ans) / dt
+            else:
+                d_error = self.kd * dato_dev
 
         self.error_ans = error
         self.last = now
