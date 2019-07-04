@@ -15,11 +15,11 @@ uart = UART(0)  # init with given baudrate
 uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
 
 ########################### Instanciar filtros ################################
-roll = PID(kp=2.2, ki=0.06, kd=15, ref=0, ilim=(-10, 10))
-gyro_roll = PID(kp=1.9, ki=0.07, kd=12, ref=0, ilim=(-10, 10))
+roll = PID(kp=0.5, ki=0.146, kd=0.25, ref=0, ilim=(-10, 10))
+gyro_roll = PID(kp=0.2, ki=0.017, kd=0.021, ref=0, ilim=(-10, 10))
 pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
-mediana_roll = Mediana()
-mediana_pitch = Mediana()
+mediana_roll = Mediana(n=3)
+mediana_pitch = Mediana(n=3)
 
 ####################### Pines de interrupcion #################################
 d3 = Pin(0, Pin.IN, Pin.PULL_UP)  #D3 interrupcion boton
@@ -86,7 +86,6 @@ def sat(valor, a=50, b=190):
 
 ########################### Variables globales ################################
 
-print('seteando constantes')
 pwmi = 100
 ref_altura = 5 # en cm
 
@@ -104,37 +103,30 @@ def int_desatada_d5():
     global pwmi
     if pwmi < 190:
         pwmi += 1
-        print(pwmi)
 
 def int_desatada_d6():
     global pwmi
     if pwmi > 42:
         pwmi -= 1
-        print(pwmi)
 
 def int_desatada_d7():
     global ref_altura
     if ref_altura < 120:
         ref_altura += 10
-        print(ref_altura)
 
 def int_desatada_d8():
     global ref_altura
     if ref_altura > 20:
         ref_altura -= 10
-        print(ref_altura)
 
 ######################## Iniciar sensores #####################################
 
 # sensor = HCSR04(trigger_pin=14, echo_pin=12) # cambiar pines
-print('Conectando mpu')
 mpu = mpu6050.MPU()
 
 ####################### Calibrar e iniciar ####################################
 
-print('calibrando')
 calibrado = mpu.calibrate()
-print('calibrado')
 if calibrado:
     led.value(0)
     time.sleep(6)
@@ -177,6 +169,10 @@ while True:
 
     medicion = mpu.read_position()
     filtro = medicion[0]
+    if -1 < filtro[0] < 1:
+        filtro[0] = 0
+    if -1 < filtro[1] < 1:
+        filtro[1] = 0
     mediana_pitch.add(filtro[0])
     mediana_roll.add(filtro[1])
     gyro_rate = mpu.read_sensors_scaled()[4:7]
