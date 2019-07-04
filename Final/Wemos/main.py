@@ -86,6 +86,7 @@ def sat(valor, a=50, b=190):
 
 ########################### Variables globales ################################
 
+print('seteando constantes')
 pwmi = 140
 i = 57
 ref_altura = 5 # en cm
@@ -110,30 +111,37 @@ def int_desatada_d5():
     global pwmi
     if pwmi < 190:
         pwmi += 1
+        print(pwmi)
 
 def int_desatada_d6():
     global pwmi
     if pwmi > 42:
         pwmi -= 1
+        print(pwmi)
 
 def int_desatada_d7():
     global ref_altura
     if ref_altura < 120:
-        pwmi += 1
+        ref_altura += 10
+        print(ref_altura)
 
 def int_desatada_d8():
     global ref_altura
-    if ref_altura > 2:
-        pwmi -= 1
+    if ref_altura > 20:
+        ref_altura -= 10
+        print(ref_altura)
 
 ######################## Iniciar sensores #####################################
 
 # sensor = HCSR04(trigger_pin=14, echo_pin=12) # cambiar pines
+print('Conectando mpu')
 mpu = mpu6050.MPU()
 
 ####################### Calibrar e iniciar ####################################
 
+print('calibrando')
 calibrado = mpu.calibrate()
+print('calibrado')
 if calibrado:
     led.value(0)
     time.sleep(6)
@@ -199,9 +207,9 @@ while True:
     # d = gyro_roll.calcular(gyro_rate[1])
     # print('control2: ', d)
 
-    pwm3 = sat(pwmi - round(d / 2))
-    pwm4 = sat(pwmi + round(d / 2))
-    uart.write(bytes([3]))
-    uart.write(bytes([sat(pwm3)]))
-    uart.write(bytes([4]))
-    uart.write(bytes([sat(pwm4)]))
+    # pwm3 = sat(pwmi - round(d / 2))
+    # pwm4 = sat(pwmi + round(d / 2))
+    # uart.write(bytes([3]))
+    # uart.write(bytes([sat(pwm3)]))
+    # uart.write(bytes([4]))
+    # uart.write(bytes([sat(pwm4)]))

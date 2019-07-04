@@ -14,8 +14,8 @@ class VentanaPrincipal(Ui_MainWindow):
         self.Boton_Bajar_Potencia.clicked.connect(self.bajar_potencia)
         self.Boton_Subir_Ref.clicked.connect(self.subir_ref)
         self.Boton_Bajar_Ref.clicked.connect(self.bajar_ref)
-        self.potencia = 130
-        self.referencia = 0
+        self.potencia = 140
+        self.referencia = 5
         self.consola_text = ''
 
     def boton_apagar_motores(self):
@@ -28,43 +28,46 @@ class VentanaPrincipal(Ui_MainWindow):
     def subir_potencia(self):
         self.consola_text += '\nSubiendo potencia...'
         self.actualizar_consola()
-        self.potencia += 1
+        self.potencia += 1 if self.potencia < 190 else 0
         self.consola_text += '\nNueva potencia = ' + str(self.potencia)
         self.actualizar_consola()
-        c_subir_potencia()
+        if self.potencia < 190:
+            c_subir_potencia()
         self.consola_text += '\tListo\n'
         self.actualizar_consola()
 
     def subir_ref(self):
         self.consola_text += '\nSubiendo referencia...'
         self.actualizar_consola()
-        self.referencia += 10
+        self.referencia += 10 if self.referencia < 120 else 0
         self.consola_text += '\nNueva referencia = ' + str(self.referencia) + ' cm'
         self.actualizar_consola()
-        c_subir_ref()
+        if self.referencia < 120:
+            c_subir_ref()
         self.consola_text += '\tListo\n'
         self.actualizar_consola()
 
     def bajar_potencia(self):
         self.consola_text += '\nBajando potencia...'
         self.actualizar_consola()
-        self.potencia -= 1
+        self.potencia -= 1 if self.potencia > 42 else 0
         self.consola_text += '\nNueva potencia = ' + str(self.potencia)
         self.actualizar_consola()
-        c_bajar_potencia()
+        if self.potencia > 42:
+            c_bajar_potencia()
         self.consola_text += '\tListo\n'
         self.actualizar_consola()
 
     def bajar_ref(self):
         self.consola_text += '\nBajando referencia...'
         self.actualizar_consola()
-        self.referencia -= 10
+        self.referencia -= 10 if self.referencia > 20 else 0
         self.consola_text += '\nNueva referencia = ' + str(self.referencia) + ' cm'
         self.actualizar_consola()
-        c_bajar_ref()
+        if self.referencia > 20:
+            c_bajar_ref()
         self.consola_text += '\tListo\n'
         self.actualizar_consola()
-        pass
 
     def actualizar_consola(self):
         self.Consola.setText(self.consola_text)

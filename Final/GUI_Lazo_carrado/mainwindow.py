@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
 "font: 14pt \"MS Shell Dlg 2\";\n"
 "color: rgb(255, 255, 255);")
         self.Boton_apagar.setObjectName("Boton_apagar")
-        self.Consola = QtWidgets.QLabel(self.centralwidget)
+        self.Consola = QtWidgets.QTextEdit(self.centralwidget)
         self.Consola.setGeometry(QtCore.QRect(90, 390, 911, 61))
         self.Consola.setText("")
         self.Consola.setObjectName("Consola")
