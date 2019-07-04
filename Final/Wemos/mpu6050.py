@@ -74,7 +74,7 @@ class MPU(object):
 
         self.calibration = [0] * 7
 
-        self.filter = cfilter.ComplementaryFilter(gyro_weight=0.9)
+        self.filter = cfilter.ComplementaryFilter(gyro_weight=0.98)
 
         self.init_pins()
         self.init_i2c()
