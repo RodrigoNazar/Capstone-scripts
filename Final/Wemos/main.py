@@ -16,7 +16,8 @@ uart = UART(0)  # init with given baudrate
 uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
 
 ########################### Instanciar filtros ################################
-roll = PID(kp=0.1, ki=.0, kd=.0, ref=0, ilim=(-10, 10))
+roll = PID(kp=2.2, ki=0.06, kd=15, ref=0, ilim=(-10, 10))
+gyro_roll = PID(kp=1.9, ki=0.07, kd=12, ref=0, ilim=(-10, 10))
 pitch = PID(kp=0.1, ki=0, kd=0, ref=0, ilim=(-10, 10))
 mediana_roll = Mediana()
 mediana_pitch = Mediana()
@@ -186,7 +187,7 @@ while True:
     filtro = medicion[0]
     mediana_pitch.add(filtro[0])
     mediana_roll.add(filtro[1])
-    # gyro_rate = mpu.read_sensors_scaled()[4:7]
+    gyro_rate = mpu.read_sensors_scaled()[4:7]
     # distance = sensor.distance_cm()
     # d = pitch.calcular(filtro[0])
     d = pitch.calcular(mediana_pitch.medicion())
@@ -201,15 +202,15 @@ while True:
     # uart.write(bytes([sat(pwm1)]))
 
     # d = roll.calcular(filtro[1])
-    d = roll.calcular(mediana_roll.medicion())
+    d = roll.calcular(mediana_roll.medicion(), gyro_rate[1])
     # print('control1: ', d1)
-    # gyro_roll.ref = d1
-    # d = gyro_roll.calcular(gyro_rate[1])
+    gyro_roll.ref = d
+    d = gyro_roll.calcular(gyro_rate[1])
     # print('control2: ', d)
 
-    # pwm3 = sat(pwmi - round(d / 2))
-    # pwm4 = sat(pwmi + round(d / 2))
-    # uart.write(bytes([3]))
-    # uart.write(bytes([sat(pwm3)]))
-    # uart.write(bytes([4]))
-    # uart.write(bytes([sat(pwm4)]))
+    pwm3 = sat(pwmi - round(d / 2))
+    pwm4 = sat(pwmi + round(d / 2))
+    uart.write(bytes([3]))
+    uart.write(bytes([sat(pwm3)]))
+    uart.write(bytes([4]))
+    uart.write(bytes([sat(pwm4)]))
