@@ -5,7 +5,6 @@ from hcsr04 import HCSR04
 from PID import PID
 from machine import UART, freq, Pin
 from Mediana import Mediana
-from k import constantes
 
 freq(160000000)
 micropython.alloc_emergency_exception_buf(100)
@@ -88,23 +87,16 @@ def sat(valor, a=50, b=190):
 ########################### Variables globales ################################
 
 print('seteando constantes')
-pwmi = 140
-i = 57
+pwmi = 100
 ref_altura = 5 # en cm
 
 ########################### Funciones desatadas por int #######################
 
 def int_desatada_d3():
-    global constantes
     global i
     led.value(0)
     uart.write(bytes([6]))
     uart.write(bytes([42]))
-    roll.reset()
-    roll.kp, roll.ki, roll.kd = constantes[i]
-    i += 1
-    if i == len(constantes):
-        i = 0
     time.sleep(5)
     led.value(1)
 
