@@ -15,12 +15,10 @@ uart = UART(0)  # init with given baudrate
 uart.init(57600, bits=8, parity=None, stop=1)  # init with given parameters
 
 ########################### Instanciar filtros ################################
-#roll = PID(kp=0.5 + 1 + 0.5+.2+0.5, ki=0.146 + .2 + 0.5, kd=0.25 + 0.05, ref=0, ilim=(-10, 10))
-#gyro_roll = PID(kp=0.2 + 0.1, ki=0.017+0.02, kd=0.021, ref=0, ilim=(-10, 10))
 roll = PID(kp=0.5 + 1 + 0.5+.2+0.5, ki=0.146 + .2 + 0.5, kd=0.25 + 0.05, ref=0, ilim=(-10, 10))
 gyro_roll = PID(kp=0.2 + 0.1, ki=0.017+0.02, kd=0.021, ref=0, ilim=(-10, 10))
-pitch = PID(kp=0.5, ki=0.146, kd=0.25, ref=0, ilim=(-10, 10))
-gyro_pitch = PID(kp=0.2, ki=0.017, kd=0.021, ref=0, ilim=(-10, 10))
+pitch = PID(kp=0.5 + 0.3 + 0.7 + 0.5, ki=0.146 + 1.9 + 0.3 + 0.2, kd=0.25 + 0.2, ref=0, ilim=(-10, 10))
+gyro_pitch = PID(kp=0.2 , ki=0.017 + 0.06, kd=0.021, ref=0, ilim=(-10, 10))
 
 mediana_roll = Mediana(n=5)
 mediana_gyro_roll = Mediana(n=3)
@@ -92,14 +90,14 @@ def sat(valor, a=50, b=190):
 
 ########################### Variables globales ################################
 
-pwmi = 70
+pwmi = 100
 ref_altura = 5 # en cm
 
 ########################### Funciones desatadas por int #######################
 
 def int_desatada_d3():
     led.value(0)
-    uart.write(bytes([5]))
+    uart.write(bytes([7]))
     uart.write(bytes([42]))
     time.sleep(5)
     led.value(1)
@@ -139,7 +137,7 @@ if calibrado:
     uart.write(bytes([0]))
     time.sleep(5)
     led.value(0)
-    uart.write(bytes([5]))
+    uart.write(bytes([7]))
     uart.write(bytes([pwmi]))
 else:
     while True:
@@ -174,7 +172,7 @@ while True:
 
     medicion = mpu.read_position()
     filtro = medicion[0]
-    if -0.7 < filtro[0] < 0.7:
+    if -0.1 < filtro[0] < 0.1:
         filtro[0] = 0
     if -0.7 < filtro[1] < 0.7:
         filtro[1] = 0
@@ -187,21 +185,20 @@ while True:
     d = pitch.calcular(mediana_pitch.medicion(), mediana_gyro_pitch.medicion())
     gyro_pitch.ref = d
     d = gyro_pitch.calcular(mediana_gyro_pitch.medicion())
-
-    pwm1 = sat(cambio_duty(pwmi - round(d / 2)))
-    pwm2 = sat(pwmi + round(d / 2))
+    pwm1 = sat(cambio_duty(pwmi + round(d / 2)))
+    pwm2 = sat(pwmi - round(d / 2))
     uart.write(bytes([1]))
-    uart.write(bytes([sat(cambio_duty(pwm1))]))
+    uart.write(bytes([pwm1]))
     uart.write(bytes([2]))
-    uart.write(bytes([sat(pwm1)]))
+    uart.write(bytes([pwm2]))
 
-    # d = roll.calcular(mediana_roll.medicion(), mediana_gyro_roll.medicion())
-    # gyro_roll.ref = d
-    # d = gyro_roll.calcular(mediana_gyro_roll.medicion())
-    #
-    # pwm3 = sat(pwmi - round(d / 2))
-    # pwm4 = sat(pwmi + round(d / 2))
-    # uart.write(bytes([3]))
-    # uart.write(bytes([sat(pwm3)]))
-    # uart.write(bytes([4]))
-    # uart.write(bytes([sat(pwm4)]))
+    d = roll.calcular(mediana_roll.medicion(), mediana_gyro_roll.medicion())
+    gyro_roll.ref = d
+    d = gyro_roll.calcular(mediana_gyro_roll.medicion())
+
+    pwm3 = sat(pwmi - round(d / 2))
+    pwm4 = sat(pwmi + round(d / 2))
+    uart.write(bytes([3]))
+    uart.write(bytes([sat(pwm3)]))
+    uart.write(bytes([4]))
+    uart.write(bytes([sat(pwm4)]))

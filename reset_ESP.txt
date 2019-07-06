@@ -12,11 +12,12 @@ ampy --port COM3 ls
 ampy --port COM3 put cfilter.mpy
 ampy --port COM3 put hcsr04.mpy
 ampy --port COM3 put mpu6050.mpy
-ampy --port COM3 put k.mpy
 ampy --port COM3 put Mediana.mpy
 ampy --port COM3 put PID.mpy
 ampy --port COM3 put main.py
 
+-----prueba constantes-----------
+ampy --port COM3 put k.mpy
 
 ampy --port COM3 ls
 ampy --port COM3 put cfilter.mpy
